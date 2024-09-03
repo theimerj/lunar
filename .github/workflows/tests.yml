@@ -19,7 +19,7 @@ jobs:
             testbench: 9.*
           - laravel: 10.*
             testbench: 8.*
-    name: ${{ matrix.testsuite }} - PHP ${{ matrix.php }} - L${{ matrix.laravel }} ${{ matrix.dependency-version == 'prefer-lowest' && '↓' || '↑' }}
+    name: ${{ matrix.testsuite }} - PHP ${{ matrix.php }} - L${{ matrix.laravel }} ${{ matrix.dependency-version == 'prefer-lowest' && '↓' || '↑' }} ${{ matrix.phpunit-config == 'phpunit.xml' && '' || 'E' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
