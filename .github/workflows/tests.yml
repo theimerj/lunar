@@ -13,13 +13,13 @@ jobs:
         laravel: [11.*, 10.*]
         dependency-version: [prefer-stable]
         testsuite: [core, admin, shipping, stripe]
-        extend-models: [true, false]
+        extend-models: ["true", "false"]
         include:
           - laravel: 11.*
             testbench: 9.*
           - laravel: 10.*
             testbench: 8.*
-    name: ${{ matrix.testsuite }} - PHP ${{ matrix.php }} - L${{ matrix.laravel }} ${{ matrix.dependency-version == 'prefer-lowest' && '↓' || '↑' }} ${{ matrix.extend-models && '' || 'E' }}
+    name: ${{ matrix.testsuite }} - PHP ${{ matrix.php }} - L${{ matrix.laravel }} ${{ matrix.dependency-version == 'prefer-lowest' && '↓' || '↑' }} ${{ matrix.extend-models == 'true' && '' || 'E' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
