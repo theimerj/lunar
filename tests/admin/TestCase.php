@@ -85,6 +85,8 @@ class TestCase extends BaseTestCase
     {
         $app['config']->set('auth.passwords.users.table', 'password_reset_tokens');
         $app['config']->set('auth.providers.users.model', User::class);
+
+        $this->replaceModelsForTesting();
     }
 
     protected function asStaff($admin = true): TestCase
@@ -109,7 +111,7 @@ class TestCase extends BaseTestCase
      */
     protected function replaceModelsForTesting(): void
     {
-        $modelClasses = Discover::in(__DIR__.'/Stubs/Models')
+        $modelClasses = Discover::in(__DIR__.'/../core/Stubs/Models')
             ->classes()
             ->get();
 
