@@ -29,9 +29,7 @@ trait HasModelExtending
         if (
             ! static::isLunarInstance()
         ) {
-            $extendedClass = static::modelClass();
-
-            return (new $extendedClass)->$method(...$parameters);
+            return (new (static::modelClass()))->$method(...$parameters);
         }
 
         return (new static)->$method(...$parameters);
@@ -47,6 +45,9 @@ trait HasModelExtending
         return ModelManifest::get($contractClass) ?? static::class;
     }
 
+    /**
+     * Returns the morph class for a model class registered in the model manifest.
+     */
     public function getMorphClass(): string
     {
         $morphMap = Relation::morphMap();
@@ -55,10 +56,10 @@ trait HasModelExtending
             return $customModelMorphMap;
         }
 
-        $parentClass = get_parent_class(static::class);
-
-        if (ModelManifest::isLunarModel($parentClass) && $lunarModelMorphMap = array_search($parentClass, $morphMap, true)) {
-            return $lunarModelMorphMap;
+        foreach (class_parents(static::class) as $ancestorClass) {
+            if (ModelManifest::isLunarModel($ancestorClass) && $ancestorModelMorphMap = array_search($ancestorClass, $morphMap, true)) {
+                return $ancestorModelMorphMap;
+            }
         }
 
         return parent::getMorphClass();
@@ -76,8 +77,7 @@ trait HasModelExtending
         if (
             ! static::isLunarInstance()
         ) {
-            $extendedClass = static::modelClass();
-            $instance = new $extendedClass;
+            $instance = new (static::modelClass());
         }
 
         foreach (Arr::wrap($classes) as $class) {

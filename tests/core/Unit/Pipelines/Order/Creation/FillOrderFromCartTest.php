@@ -34,7 +34,8 @@ test('can run pipeline', function () {
         'quantity' => 1,
     ]);
 
-    $order = new Order([
+    /** @var Order $order */
+    $order = new (Order::modelClass())([
         'cart_id' => $cart->id,
     ]);
 
