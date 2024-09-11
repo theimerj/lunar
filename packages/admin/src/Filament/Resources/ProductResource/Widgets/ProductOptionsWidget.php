@@ -282,7 +282,7 @@ class ProductOptionsWidget extends BaseWidget implements HasActions, HasForms
         foreach ($this->configuredOptions as $optionIndex => $option) {
 
             $optionModel = empty($option['id']) ?
-                new ProductOption([
+                new (ProductOption::modelClass())([
                     'shared' => false,
                 ]) :
                 ProductOption::modelClass()::find($option['id']);
@@ -305,7 +305,7 @@ class ProductOptionsWidget extends BaseWidget implements HasActions, HasForms
 
             foreach ($option['option_values'] as $optionValueIndex => $value) {
                 $optionValueModel = empty($value['id']) ?
-                    new ProductOptionValue([
+                    new (ProductOptionValue::modelClass())([
                         'product_option_id' => $option['id'],
                     ]) :
                     ProductOptionValue::modelClass()::find($value['id']);
@@ -379,7 +379,7 @@ class ProductOptionsWidget extends BaseWidget implements HasActions, HasForms
                 }
 
                 foreach ($this->variants as $variantIndex => $variantData) {
-                    $variant = new ProductVariant([
+                    $variant = new (ProductVariant::modelClass())([
                         'product_id' => $this->record->id,
                     ]);
                     $basePrice = null;
