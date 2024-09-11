@@ -151,7 +151,6 @@ class ModelManifest implements ModelManifestInterface
         return 'Lunar\\Models\\'.$shortName;
     }
 
-
     public function findLunarModel(string|BaseModel $model): ?string
     {
         $class = (new \ReflectionClass($model))->getName();
