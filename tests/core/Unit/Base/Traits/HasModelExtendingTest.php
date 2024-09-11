@@ -45,3 +45,15 @@ test('can forward static method calls to extended model', function () {
     expect($newStaticMethod)->toBeInstanceOf(Collection::class);
     expect($newStaticMethod)->toHaveCount(3);
 });
+
+test('morph map is correct when models are extended', function () {
+    \Lunar\Facades\ModelManifest::replace(
+        \Lunar\Models\Contracts\Product::class,
+        \Lunar\Tests\Core\Stubs\Models\Custom\CustomProduct::class
+    );
+
+    expect((new \Lunar\Tests\Core\Stubs\Models\Custom\CustomProduct)->getMorphClass())
+        ->toBe('product')
+        ->and((new Product)->getMorphClass())
+        ->toBe('product');
+});

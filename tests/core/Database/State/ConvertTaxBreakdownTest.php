@@ -11,6 +11,7 @@ use Lunar\Models\Language;
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
 
 test('can run', function () {
+
     Storage::fake('local');
 
     Language::factory()->create([

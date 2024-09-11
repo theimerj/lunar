@@ -47,15 +47,18 @@ trait HasModelExtending
         return ModelManifest::get($contractClass) ?? static::class;
     }
 
-    /**
-     * Returns the morph class for a model class registered in the model manifest.
-     */
     public function getMorphClass(): string
     {
         $morphMap = Relation::morphMap();
 
-        if (! empty($morphMap) && in_array(static::modelClass(), $morphMap)) {
-            return array_search(static::modelClass(), $morphMap, true);
+        if ($customModelMorphMap = array_search(static::modelClass(), $morphMap, true)) {
+            return $customModelMorphMap;
+        }
+
+        foreach (class_parents(static::class) as $ancestorClass) {
+            if (ModelManifest::isLunarModel($ancestorClass) && $ancestorModelMorphMap = array_search($ancestorClass, $morphMap, true)) {
+                return $ancestorModelMorphMap;
+            }
         }
 
         return parent::getMorphClass();
