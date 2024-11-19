@@ -19,6 +19,7 @@ use Kalnoy\Nestedset\NestedSetServiceProvider;
 use Livewire\LivewireServiceProvider;
 use Lunar\Admin\LunarPanelProvider;
 use Lunar\Admin\Models\Staff;
+use Lunar\Facades\ModelManifest;
 use Lunar\LunarServiceProvider;
 use Lunar\Tests\Admin\Providers\LunarPanelTestServiceProvider;
 use Lunar\Tests\Admin\Stubs\User;
@@ -29,6 +30,7 @@ use Spatie\Activitylog\ActivitylogServiceProvider;
 use Spatie\LaravelBlink\BlinkServiceProvider;
 use Spatie\MediaLibrary\MediaLibraryServiceProvider;
 use Spatie\Permission\PermissionServiceProvider;
+use Spatie\StructureDiscoverer\Discover;
 use Technikermathe\LucideIcons\BladeLucideIconsServiceProvider;
 
 class TestCase extends BaseTestCase
@@ -83,6 +85,8 @@ class TestCase extends BaseTestCase
     {
         $app['config']->set('auth.passwords.users.table', 'password_reset_tokens');
         $app['config']->set('auth.providers.users.model', User::class);
+
+        $this->replaceModelsForTesting();
     }
 
     protected function asStaff($admin = true): TestCase
@@ -99,5 +103,21 @@ class TestCase extends BaseTestCase
         $staff->assignRole($admin ? 'admin' : 'staff');
 
         return $staff;
+    }
+
+    /**
+     * Replace Lunar models with test models for testing
+     * functionality with model extending.
+     */
+    protected function replaceModelsForTesting(): void
+    {
+        $modelClasses = Discover::in(__DIR__.'/../core/Stubs/Models')
+            ->classes()
+            ->get();
+
+        foreach ($modelClasses as $modelClass) {
+            $interfaceClass = ModelManifest::guessContractClass($modelClass);
+            ModelManifest::replace($interfaceClass, $modelClass);
+        }
     }
 }

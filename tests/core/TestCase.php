@@ -5,6 +5,7 @@ namespace Lunar\Tests\Core;
 use Cartalyst\Converter\Laravel\ConverterServiceProvider;
 use Illuminate\Support\Facades\Config;
 use Kalnoy\Nestedset\NestedSetServiceProvider;
+use Lunar\Facades\ModelManifest;
 use Lunar\Facades\Taxes;
 use Lunar\LunarServiceProvider;
 use Lunar\Tests\Core\Stubs\TestTaxDriver;
@@ -13,6 +14,7 @@ use Lunar\Tests\Core\Stubs\User;
 use Spatie\Activitylog\ActivitylogServiceProvider;
 use Spatie\LaravelBlink\BlinkServiceProvider;
 use Spatie\MediaLibrary\MediaLibraryServiceProvider;
+use Spatie\StructureDiscoverer\Discover;
 
 class TestCase extends \Orchestra\Testbench\TestCase
 {
@@ -52,6 +54,24 @@ class TestCase extends \Orchestra\Testbench\TestCase
 
     protected function getEnvironmentSetUp($app)
     {
-        // perform environment setup
+        $this->replaceModelsForTesting();
+
+        ModelManifest::morphMap();
+    }
+
+    /**
+     * Replace Lunar models with test models for testing
+     * functionality with model extending.
+     */
+    protected function replaceModelsForTesting(): void
+    {
+        $modelClasses = Discover::in(__DIR__.'/Stubs/Models')
+            ->classes()
+            ->get();
+
+        foreach ($modelClasses as $modelClass) {
+            $interfaceClass = ModelManifest::guessContractClass($modelClass);
+            ModelManifest::replace($interfaceClass, $modelClass);
+        }
     }
 }
