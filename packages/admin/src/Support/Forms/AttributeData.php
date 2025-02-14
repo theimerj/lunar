@@ -13,6 +13,7 @@ use Lunar\Admin\Support\FieldTypes\Toggle;
 use Lunar\Admin\Support\FieldTypes\TranslatedText;
 use Lunar\Admin\Support\FieldTypes\Vimeo;
 use Lunar\Admin\Support\FieldTypes\YouTube;
+use Lunar\Base\FieldType as FieldTypeContract;
 use Lunar\FieldTypes\Dropdown as DrodownFieldType;
 use Lunar\FieldTypes\File as FileFieldType;
 use Lunar\FieldTypes\ListField as ListFieldFieldType;
@@ -40,40 +41,32 @@ class AttributeData
 
     public function getFilamentComponent(Attribute $attribute): Component
     {
-        $fieldType = $this->fieldTypes[
-        $attribute->type
-        ] ?? TextField::class;
+        $fieldType = $this->fieldTypes[$attribute->type] ?? TextField::class;
 
         /** @var Component $component */
         $component = $fieldType::getFilamentComponent($attribute);
 
         return $component
-            ->label(
-                $attribute->translate('name')
-            )
+            ->label($attribute->translate('name'))
             ->formatStateUsing(function ($state) use ($attribute) {
                 if (
-                    ! $state ||
-                    (get_class($state) != $attribute->type)
+                    ! $state instanceof FieldTypeContract ||
+                    (get_class($state) !== $attribute->type)
                 ) {
-                    return new $attribute->type;
+                    $state = new $attribute->type;
                 }
 
-                return $state;
+                return $state->getValue();
             })
             ->mutateDehydratedStateUsing(function ($state) use ($attribute) {
-                if ($attribute->type == FileFieldType::class) {
-                    $instance = new $attribute->type;
-                    $instance->setValue($state);
-
-                    return $instance;
-                }
-
                 if (
-                    ! $state ||
-                    (get_class($state) != $attribute->type)
+                    ! $state instanceof FieldTypeContract ||
+                    (get_class($state) !== $attribute->type)
                 ) {
-                    return new $attribute->type;
+                    $field = (new $attribute->type);
+                    $field->setValue($state);
+
+                    return $field;
                 }
 
                 return $state;
